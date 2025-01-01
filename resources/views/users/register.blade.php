@@ -76,7 +76,11 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>
+            <div class="mt-3 text-center">
+                <p>Already have an account? <a href="{{ route('user.login.submit') }}">Login here</a></p>
+            </div>
         </div>
+        
     </div>
 </body>
 </html>

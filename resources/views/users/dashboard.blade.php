@@ -4,5 +4,5 @@
 
 @section('content')
     <h1>Dashboard</h1>
-    <p>Welcome to the Jagir Network!. </p>
+    <p>Welcome to the Jagir Network, {{ $user->fullname }}!</p>
 @endsection

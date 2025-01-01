@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,8 @@
     <style>
         body {
             overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
         }
 
         .sidebar {
@@ -17,27 +20,60 @@
             left: 0;
             width: 250px;
             height: 100vh;
-            background-color: #4a4eb1;
-            color: white;
+            background-color: white;
+            color: black;
             overflow-y: auto;
             transition: all 0.3s ease;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            border-right: 3px solid #007bff;
+        }
+
+        .sidebar .logo-section {
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar .logo-section h2 {
+            font-size: 1.8rem;
+            color: black;
+        }
+
+        .sidebar .logo-section i {
+            font-size: 1rem;
+            color: #666;
         }
 
         .sidebar .nav-link {
-            padding: 10px 15px;
-            color: white;
+            padding: 15px;
+            color: black;
             border-radius: 5px;
-            transition: background-color 0.3s, transform 0.3s;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 8px 10px;
+            font-size: 1.1rem;
+            border: 2px solid #007bff;
         }
 
         .sidebar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #007bff;
             transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: white;
         }
 
-        .sidebar h2 {
-            text-align: center;
+        .sidebar .nav-link i {
+            margin-right: 15px;
+        }
+
+        .sidebar h2 img {
+            max-width: 94%;
+            max-height: 140px;
+            object-fit: contain;
         }
 
         .burger-menu {
@@ -46,7 +82,7 @@
             position: fixed;
             top: 15px;
             left: 15px;
-            color: #4a4eb1;
+            color: #007bff;
             z-index: 1100;
             display: none;
         }
@@ -57,7 +93,7 @@
             top: 15px;
             right: 15px;
             cursor: pointer;
-            color: white;
+            color: #007bff;
             display: none;
         }
 
@@ -73,6 +109,14 @@
 
         .content.collapsed {
             margin-left: 0;
+        }
+
+        .sidebar .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
         }
 
         @media (max-width: 768px) {
@@ -102,6 +146,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Burger Menu -->
     <div class="burger-menu" onclick="toggleSidebar()">
@@ -110,19 +155,30 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <!-- Close Button -->
-        <div class="close-btn" onclick="toggleSidebar()">
-            <i class="bi bi-x"></i>
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <h2>
+                <img src="{{ asset('logo.png') }}" alt="Company Logo">
+            </h2>
+            <i class="text-muted mb-4">Follow your passion</i>
         </div>
-        <h2 class="text-white fw-bold mt-5">Jagir Network</h2>
-        <i class="text-light mb-4">Follow your passion</i>
+
         <nav class="nav flex-column">
             <a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-house"></i> Home</a>
             <a href="{{ route('profile') }}" class="nav-link"><i class="bi bi-person"></i> Profile</a>
+            <form action="{{ route('user.logout') }}" method="POST" class="nav-link" style="display: inline-block;">
+                @csrf
+                <button type="submit" class="btn btn-link p-0 m-0 align-baseline text-danger" style="text-decoration: none;">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
         
-           
         </nav>
-        <p class="text-light mt-4 text-center">&copy; {{ now()->year }} All rights reserved</p>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="text-light mt-4">&copy; {{ now()->year }} All rights reserved</p>
+        </div>
     </div>
 
     <!-- Content -->
@@ -144,4 +200,5 @@
         }
     </script>
 </body>
+
 </html>

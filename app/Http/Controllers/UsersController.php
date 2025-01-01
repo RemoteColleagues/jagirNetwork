@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class UsersController extends Controller
@@ -52,39 +53,7 @@ class UsersController extends Controller
     {
         return view('users/login');
     }
-     // Handle login request
-    //  public function login(Request $request)
-    //  {
-    //      // Validate the request
-    //      $request->validate([
-    //          'email' => 'required|email',
-    //          'password' => 'required',
-    //      ]);
- 
-    //      // Check credentials
-    //      $user = User::where('email', $request->email)->first();
- 
-    //      if (!$user || !Hash::check($request->password, $user->password)) {
-    //         return back()->withErrors([
-    //             'email' => 'The provided credentials are incorrect.'
-    //         ])->withInput();
-    //     }
- 
-    //      // Log the user in
-    //      Auth::login($user);
- 
-    //      if ($request->expectsJson()) {
-    //          // API response
-    //          return response()->json([
-    //              'success' => true,
-    //              'message' => 'Login successful!',
-    //              'data' => $user,
-    //          ], 200);
-    //      }
- 
-    //      // Redirect to dashboard or home page
-    //      return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
-    //  }
+    
 
     public function login(Request $request)
 {
@@ -119,13 +88,15 @@ class UsersController extends Controller
                  ], 200);
              }
 
-    return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+    return redirect()->route('dashboard')->with('success', 'Logged in successfully!')->with('token', $token);
 
 }
 
      public function dashboard()
 {
-    return view('users.dashboard'); // Ensure you have a 'dashboard.blade.php' view
+    $user = Auth::user(); // This will return the currently authenticated user
+
+    return view('users.dashboard',compact('user')); // Ensure you have a 'dashboard.blade.php' view
     }
     public function update(Request $request, $id)
     {
@@ -150,5 +121,15 @@ class UsersController extends Controller
 
         return redirect()->route('profile', $user->id)->with('success', 'Profile updated successfully!');
     }
+    public function logout()
+{
+    Auth::logout();
+    Session::flush();
+    session()->regenerate();  // Optional: regenerate the session to prevent session fixation attacks
+
+    return view('users/login');
+}
+
+
 
 }

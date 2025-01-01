@@ -27,10 +27,9 @@ class ProfileController extends Controller
     }
 
     $user_id = auth()->id();
-    $profile = $user->profile;  // Will return null if no profile exists
+    $profile = $user->profile; 
     $userProfile = UserProfile::where('user_id', $user_id)->first();
 
-    // If the profile doesn't exist, handle it gracefully
     if (!$profile) {
         $profile = null;
     }
@@ -61,17 +60,18 @@ class ProfileController extends Controller
             'cgpa' => 'nullable|string|max:50',
             'about' => 'nullable|string',
             'skills' => 'nullable|array',
-            'skills.*' => 'nullable|string|max:100',
+            'skills.*.name' => 'nullable|string|max:100',
+            'skills.*.experience' => 'nullable|string|max:100',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'cv_file' => 'nullable|mimes:pdf,doc,docx|max:2048',
         ]);
-
+    
         // Get the logged-in user's ID
         $user_id = auth()->id();
-
+    
         // Check if a profile exists; if not, create a new one
         $userProfile = UserProfile::firstOrNew(['user_id' => $user_id]);
-
+    
         // Update the profile data
         $userProfile->age = $request->age;
         $userProfile->dob = $request->dob;
@@ -79,29 +79,77 @@ class ProfileController extends Controller
         $userProfile->degree = $request->degree;
         $userProfile->cgpa = $request->cgpa;
         $userProfile->about = $request->about;
-        $userProfile->skills = json_encode($request->skills);
-
-        // Handle profile image upload
-        if ($request->hasFile('profile_image')) {
-            $userProfile->profile_image = $request->file('profile_image')->store('profile_images', 'public');
-        }
-
-        // Handle CV file upload
-        if ($request->hasFile('cv_file')) {
-            $userProfile->cv_file = $request->file('cv_file')->store('cv_files', 'public');
-        }
-
-        // Save the profile
-        $userProfile->save();
-
-        if ($request->expectsJson()) {
-            return response()->json(['success' => 'Profile updated successfully!']);
+    
+        // Format skills as an associative array
+        $skills = [];
+        if ($request->has('skills') && is_array($request->skills)) {
+            foreach ($request->skills as $skill) {
+                if (!empty($skill['name']) && !empty($skill['experience'])) {
+                    $skills[$skill['name']] = $skill['experience'];
+                }
+            }
         }
     
-        return redirect()->route(route: 'profile')->with('success', 'Profile updated successfully!');
-    }
-   
+        // Store skills in JSON format
+        $userProfile->skills = json_encode($skills);
+    
+        // Handle profile image upload and store full path in DB
+        if ($request->hasFile('profile_image')) {
+            // Store the file in the public storage directory
+            $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
+            
+            // Generate the full URL for the file
+            $userProfile->profile_image = asset('storage/' . $profileImagePath);
+        }
+    
+        // Handle CV file upload and store full path in DB
+        if ($request->hasFile('cv_file')) {
+            // Store the file in the public storage directory
+            $cvFilePath = $request->file('cv_file')->store('cv_files', 'public');
+            
+            // Generate the full URL for the file
+            $userProfile->cv_file = asset('storage/' . $cvFilePath);
+        }
+    
+        // Save the profile
+        $userProfile->save();
+    
+        // Return response with the profile data in full URL format
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => 'Profile updated successfully!',
+                'userProfile' => $userProfile, // Including the full URLs in response
+            ]);
+        }
+        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
 
+    }
+    
+    
+    
+   
+  // In your controller method
+public function deleteSkill($id)
+{
+    try {
+        $userProfile = auth()->user()->profile; // Accessing the profile via the relationship
+        $skills = json_decode($userProfile->skills, true);
+
+        // The skill and experience are stored sequentially, so we need to remove two consecutive items
+        $index = $id * 2; // The skill index will be 2 times the given ID
+        if (isset($skills[$index])) {
+            array_splice($skills, $index, 2); // Remove skill and its associated experience
+            $userProfile->skills = json_encode($skills);
+            $userProfile->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Skill deleted successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Failed to delete skill']);
+    }
+}
+
+    
     
   
 }
