@@ -166,6 +166,10 @@
         <nav class="nav flex-column">
             <a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-house"></i> Home</a>
             <a href="{{ route('profile') }}" class="nav-link"><i class="bi bi-person"></i> Profile</a>
+            @if (auth()->user() && auth()->user()->role === 'admin')
+            <a href="{{ route('admin.index') }}" class="nav-link"><i class="bi bi-people"></i> Users</a>
+        @endif
+        
             <form action="{{ route('user.logout') }}" method="POST" class="nav-link" style="display: inline-block;">
                 @csrf
                 <button type="submit" class="btn btn-link p-0 m-0 align-baseline text-danger" style="text-decoration: none;">

@@ -49,9 +49,14 @@
         }
     }
 </style>
+@php
+    $role = auth()->user()->role; // Assuming you're using Laravel's authentication
+@endphp
 
 <div class="container mt-4">
     <div class="card mb-4">
+        @if (in_array($role, ['user', 'admin']))
+
         <div class="card-header d-flex justify-content-between align-items-center"
             onclick="toggleCard(this)">
             <h5>Basic Information</h5>
@@ -63,6 +68,12 @@
                 @method('PUT')
                 <div class="row mb-3">
                     <div class="col-md-12">
+                        @if ($role === 'admin')
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <input type="text" id="role" class="form-control" value="admin" readonly>
+                        </div>
+                    @endif
                         <div class="mb-3">
                             <label for="fullname" class="form-label">Full Name</label>
                             <input type="text" id="fullname" class="form-control" placeholder="Enter your full name"
@@ -90,10 +101,20 @@
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary mt-3">Update</button>
             </form>
+            <script>
+                 function toggleCard(header) {
+        const cardContent = header.closest('.card').querySelector('.card-content');
+        cardContent.classList.toggle('d-none');
+        }
+        </script>
         </div>
+        @endif
 
     </div>
+</div>
+<div class="container mt-4">
 
+    @if ($role === 'user')
     <form id="profileForm" method="POST" enctype="multipart/form-data" action="{{ route('user.details.store') }}">
         @csrf
         <!-- Other Details -->
@@ -237,7 +258,6 @@
         <button type="submit" class="btn btn-primary mt-3">Save</button>
 
     </form>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -333,4 +353,5 @@ function deleteSkillFromDatabase(skillId) {
 }
 
 </script>
+@endif
 @endsection

@@ -34,6 +34,7 @@ class UsersController extends Controller
             'email' => $request->email,
             'contact' => $request->contact,
             'password' => Hash::make($request->password),
+            'role'=>'user'
         ]);
     
         // Handle JSON request
@@ -88,6 +89,10 @@ class UsersController extends Controller
                  ], 200);
              }
 
+            //  if ($user->role === 'admin') {
+            //     return redirect()->route('adminDashboard')->with('success', 'Logged in as admin successfully!')->with('token', $token);
+            // }
+
     return redirect()->route('dashboard')->with('success', 'Logged in successfully!')->with('token', $token);
 
 }
@@ -103,14 +108,17 @@ class UsersController extends Controller
         $validated = $request->validate([
             'fullname' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
-
+           ' role' => 'max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string',  // Make sure passwords match
         ]);
         $user = User::findOrFail($id);
         $user->fullname = $validated['fullname'];
         $user->contact = $validated['contact'];
-
+        if (isset($validated['role'])) {
+            $user->role = $validated['role'];
+        }
+    
         $user->email = $validated['email'];
         if ($request->filled('password')) {
             $user->password = bcrypt($validated['password']);
