@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'contact',
         'password',
+        'role', // Ensure you have a role field
+
     
     ];
     public function profile()

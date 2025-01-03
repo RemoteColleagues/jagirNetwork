@@ -12,10 +12,10 @@
                 <th>#</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Profile Image</th>
+                <th>Contact </th>
                 <th>Age</th>
+                <th>Address </th>
                 <th>Degree</th>
-                <th>Skills</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,24 +25,15 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $user->fullname }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->contact }}</td>
+        
+                    <td>{{ $user->profile ? $user->profile->age : 'N/A' }}</td>
+                    <td>{{ $user->profile ? $user->profile->address : 'N/A' }}</td>
+                    <td>{{ $user->profile ? $user->profile->degree : 'N/A' }}</td>
+        
                     <td>
-                        @if ($user->userProfile && $user->userProfile->profile_image)
-                            <img src="{{ asset('storage/' . $user->userProfile->profile_image) }}" alt="Profile Image" width="50">
-                        @else
-                            No image
-                        @endif
-                    </td>
-                    <td>{{ $user->userProfile ? $user->userProfile->age : 'N/A' }}</td>
-                    <td>{{ $user->userProfile ? $user->userProfile->degree : 'N/A' }}</td>
-                    <td>
-                        @if ($user->userProfile && is_array($user->userProfile->skills))
-                            {{ implode(', ', $user->userProfile->skills) }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td>
-                        {{-- <a href="{{ route('users.show', $user->id) }}" class="btn btn-info">View</a> --}}
+                        <!-- View button to redirect to the user's details page -->
+                        <a href="{{ route('admin.user.show', $user->id) }}" class="btn btn-primary btn-sm">View</a>
                     </td>
                 </tr>
             @endforeach

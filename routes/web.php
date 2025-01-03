@@ -21,7 +21,8 @@ Route::middleware('auth:sanctum')->post('/user/details', [ProfileController::cla
 // Route::post('/user/details', [ProfileController::class, 'storeOrUpdate'])->name('user.details.store');
 Route::delete('/delete-skill/{id}', [ProfileController::class, 'deleteSkill']);
 
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('adminDashboard');
+// Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('adminDashboard');
 // Route to show the admin dashboard
-Route::middleware(['auth:sanctum'])->get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::middleware('auth:sanctum')->get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
+Route::get('admin/user/{user}', [AdminController::class, 'show'])->name('admin.user.show');
